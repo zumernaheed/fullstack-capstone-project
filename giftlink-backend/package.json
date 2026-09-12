@@ -9,13 +9,16 @@
     "test": "node --test tests/health.test.js"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "@redis/bloom": "^6.2.1",
+    "@redis/client": "^6.2.1",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.20.0",
-    "natural": "^8.1.0"
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.6.0",
+    "natural": "^8.1.0",
+    "redis": "^6.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",

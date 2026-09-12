@@ -1,93 +1,236 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../db.js";
-import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Task 11: registration API
+/* =========================================================
+   REGISTER USER
+========================================================= */
+
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, location = "" } = req.body;
+
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email and password are required" });
+      return res.status(400).json({
+        message: "Name, email and password are required"
+      });
     }
 
     const db = await connectToDatabase();
-    const users = db.collection("users");
+
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (await users.findOne({ email: normalizedEmail })) {
-      return res.status(409).json({ message: "User already exists" });
+    const existingUser = await db.collection("users").findOne({
+      email: normalizedEmail
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        message: "User already exists"
+      });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
-    const user = {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await db.collection("users").insertOne({
       name: name.trim(),
       email: normalizedEmail,
-      passwordHash,
+      password: hashedPassword,
       location: location.trim(),
       createdAt: new Date()
-    };
+    });
 
-    const result = await users.insertOne(user);
-    res.status(201).json({ message: "User registered successfully", userId: result.insertedId });
+    res.status(201).json({
+      message: "User registered successfully",
+      userId: result.insertedId
+    });
   } catch (error) {
-    res.status(500).json({ message: "Registration failed", error: error.message });
+    console.error("Registration error:", error);
+
+    res.status(500).json({
+      message: "Unable to register user",
+      error: error.message
+    });
   }
 });
 
-// Task 11: login API
+
+/* =========================================================
+   LOGIN USER
+========================================================= */
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const db = await connectToDatabase();
-    const user = await db.collection("users").findOne({ email: email?.trim().toLowerCase() });
 
-    if (!user || !(await bcrypt.compare(password || "", user.passwordHash))) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required"
+      });
+    }
+
+    const db = await connectToDatabase();
+
+    const user = await db.collection("users").findOne({
+      email: email.trim().toLowerCase()
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password"
+      });
+    }
+
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        message: "Invalid email or password"
+      });
     }
 
     const token = jwt.sign(
-      { sub: user._id.toString(), email: user.email, name: user.name },
+      {
+        userId: user._id.toString(),
+        email: user.email
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "2h" }
+      {
+        expiresIn: "1h"
+      }
     );
 
     res.status(200).json({
       message: "Login successful",
       token,
-      user: { name: user.name, email: user.email, location: user.location || "" }
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        location: user.location
+      }
     });
   } catch (error) {
-    res.status(500).json({ message: "Login failed", error: error.message });
+    console.error("Login error:", error);
+
+    res.status(500).json({
+      message: "Unable to login",
+      error: error.message
+    });
   }
 });
 
-// Task 11: update user information API
-router.put("/update", requireAuth, async (req, res) => {
-  try {
-    const { name, location } = req.body;
-    const update = {};
-    if (typeof name === "string" && name.trim()) update.name = name.trim();
-    if (typeof location === "string") update.location = location.trim();
 
-    if (Object.keys(update).length === 0) {
-      return res.status(400).json({ message: "No valid profile fields supplied" });
+/* =========================================================
+   UPDATE USER
+========================================================= */
+
+router.put("/update", async (req, res) => {
+  try {
+    const authorization = req.headers.authorization;
+
+    if (
+      !authorization ||
+      !authorization.startsWith("Bearer ")
+    ) {
+      return res.status(401).json({
+        message: "Authorization token required"
+      });
     }
 
-    const db = await connectToDatabase();
-    const result = await db.collection("users").findOneAndUpdate(
-      { email: req.user.email },
-      { $set: update },
-      { returnDocument: "after", projection: { passwordHash: 0 } }
+    const token = authorization.split(" ")[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
     );
 
-    if (!result) return res.status(404).json({ message: "User not found" });
-    res.status(200).json({ message: "User updated successfully", user: result });
+    const db = await connectToDatabase();
+
+    const updates = {};
+
+    if (req.body.name) {
+      updates.name = req.body.name.trim();
+    }
+
+    if (req.body.location) {
+      updates.location = req.body.location.trim();
+    }
+
+    if (req.body.email) {
+      updates.email = req.body.email
+        .trim()
+        .toLowerCase();
+    }
+
+    if (req.body.password) {
+      updates.password = await bcrypt.hash(
+        req.body.password,
+        10
+      );
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        message: "No update information provided"
+      });
+    }
+
+    const userId = new ObjectId(decoded.userId);
+
+    const result = await db.collection("users").updateOne(
+      {
+        _id: userId
+      },
+      {
+        $set: updates
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const updatedUser = await db.collection("users").findOne(
+      {
+        _id: userId
+      },
+      {
+        projection: {
+          password: 0
+        }
+      }
+    );
+
+    res.status(200).json({
+      message: "User information updated successfully",
+      user: updatedUser
+    });
   } catch (error) {
-    res.status(500).json({ message: "Update failed", error: error.message });
+    console.error("Update error:", error);
+
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      return res.status(401).json({
+        message: "Invalid or expired token"
+      });
+    }
+
+    res.status(500).json({
+      message: "Unable to update user",
+      error: error.message
+    });
   }
 });
 
