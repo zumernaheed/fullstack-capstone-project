@@ -3,35 +3,53 @@ import { connectToDatabase } from "../db.js";
 
 const router = express.Router();
 
-function escapeRegex(value = "") {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 router.get("/", async (req, res) => {
   try {
-    const { q = "", category = "" } = req.query;
+    const db = await connectToDatabase();
+
+    const { category, q } = req.query;
+
     const filter = {};
 
-    // Task 6: filter items by category.
-    if (category.trim()) {
-      filter.category = { $regex: `^${escapeRegex(category.trim())}$`, $options: "i" };
+    // Filter by category
+    if (category) {
+      filter.category = {
+        $regex: `^${category}$`,
+        $options: "i"
+      };
     }
 
-    if (q.trim()) {
-      const term = { $regex: escapeRegex(q.trim()), $options: "i" };
+    // Search by keyword
+    if (q) {
       filter.$or = [
-        { name: term },
-        { description: term },
-        { category: term },
-        { location: term }
+        {
+          name: {
+            $regex: q,
+            $options: "i"
+          }
+        },
+        {
+          description: {
+            $regex: q,
+            $options: "i"
+          }
+        }
       ];
     }
 
-    const db = await connectToDatabase();
-    const gifts = await db.collection("gifts").find(filter).toArray();
+    const gifts = await db
+      .collection("gifts")
+      .find(filter)
+      .toArray();
+
     res.status(200).json(gifts);
   } catch (error) {
-    res.status(500).json({ message: "Search failed", error: error.message });
+    console.error("Search error:", error);
+
+    res.status(500).json({
+      message: "Unable to search gifts",
+      error: error.message
+    });
   }
 });
 
