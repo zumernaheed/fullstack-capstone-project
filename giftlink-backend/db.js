@@ -6,19 +6,24 @@ dotenv.config();
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME || "giftlink";
 
-if (!uri) {
-  throw new Error("MONGODB_URI is missing. Add it to giftlink-backend/.env");
-}
-
-const client = new MongoClient(uri);
-let database;
+let client;
+let db;
 
 export async function connectToDatabase() {
-  if (database) return database;
+  if (db) {
+    return db;
+  }
+
+  client = new MongoClient(uri, {
+  family: 4,
+  serverSelectionTimeoutMS: 10000
+});
 
   await client.connect();
-  database = client.db(dbName);
-  return database;
-}
 
-export { client };
+  console.log("Connected successfully to MongoDB");
+
+  db = client.db(dbName);
+
+  return db;
+}
