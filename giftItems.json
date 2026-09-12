@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Wooden Coffee Table",
+    "category": "Furniture",
+    "description": "Solid wooden coffee table with minor surface marks.",
+    "condition": "Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Study Chair",
+    "category": "Furniture",
+    "description": "Adjustable study chair suitable for a desk.",
+    "condition": "Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Dinner Plate Set",
+    "category": "Kitchen",
+    "description": "Set of six ceramic dinner plates.",
+    "condition": "Very Good",
+    "location": "Karachi",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Electric Kettle",
+    "category": "Kitchen",
+    "description": "Working 1.7L electric kettle.",
+    "condition": "Good",
+    "location": "Islamabad",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Python Programming Book",
+    "category": "Books",
+    "description": "Beginner-friendly Python programming book.",
+    "condition": "Very Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "World Atlas",
+    "category": "Books",
+    "description": "Large illustrated world atlas.",
+    "condition": "Good",
+    "location": "Rawalpindi",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Desk Lamp",
+    "category": "Home Decor",
+    "description": "LED desk lamp with adjustable neck.",
+    "condition": "Very Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Wall Clock",
+    "category": "Home Decor",
+    "description": "Simple round wall clock.",
+    "condition": "Good",
+    "location": "Faisalabad",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Badminton Rackets",
+    "category": "Sports",
+    "description": "Pair of badminton rackets with covers.",
+    "condition": "Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Yoga Mat",
+    "category": "Sports",
+    "description": "Non-slip yoga mat, cleaned and ready to use.",
+    "condition": "Very Good",
+    "location": "Karachi",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Kids Building Blocks",
+    "category": "Toys",
+    "description": "Mixed set of colorful building blocks.",
+    "condition": "Good",
+    "location": "Multan",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Board Game",
+    "category": "Toys",
+    "description": "Family board game with all pieces included.",
+    "condition": "Very Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Winter Jacket",
+    "category": "Clothing",
+    "description": "Warm unisex winter jacket, medium size.",
+    "condition": "Good",
+    "location": "Islamabad",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Handbag",
+    "category": "Clothing",
+    "description": "Everyday handbag with multiple compartments.",
+    "condition": "Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Plant Pots",
+    "category": "Garden",
+    "description": "Three medium plant pots for indoor or outdoor use.",
+    "condition": "Good",
+    "location": "Peshawar",
+    "available": true,
+    "comments": []
+  },
+  {
+    "name": "Watering Can",
+    "category": "Garden",
+    "description": "Plastic watering can in working condition.",
+    "condition": "Good",
+    "location": "Lahore",
+    "available": true,
+    "comments": []
+  }
+]

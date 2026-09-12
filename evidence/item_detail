@@ -1,0 +1,4 @@
+PASTE YOUR REAL cURL COMMAND AND REAL OUTPUT HERE.
+
+First copy an _id from /api/gifts, then run:
+curl http://localhost:5000/api/gifts/PASTE_REAL_OBJECT_ID_HERE

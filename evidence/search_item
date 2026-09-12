@@ -1,0 +1,4 @@
+PASTE YOUR REAL cURL COMMAND AND REAL OUTPUT HERE.
+
+Command template:
+curl "http://localhost:5000/api/search?category=Books&q=Python"

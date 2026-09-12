@@ -1,0 +1,3 @@
+PASTE THE COMPLETE mongoimport COMMAND AND OUTPUT HERE.
+Expected successful line must show 16 imported documents, for example:
+16 document(s) imported successfully. 0 document(s) failed to import.
